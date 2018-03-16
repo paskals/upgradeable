@@ -14,7 +14,8 @@ interface CongressInterface {
  in a single contract, but another, as shown here, is to store data in the version of the contract where it
  was first introduced. Later versions can introduce different logic, and new data storage without abandoning
  the original storage of old contracts. The only tradeoff is the increased gass usage for calling external
- contracts every time you interact with data located in another version of the contract.
+ contracts every time you interact with data located in another version of the contract. You might not need to
+ take all storage (simple arrays and maps could manually be set on the new version of a contract).
  @author P
  */
 contract Upgradeable {
@@ -40,7 +41,7 @@ contract Upgradeable {
     bool public active;
 
     /** 
-      The address of the congress at time of deployment.
+     @notice The address of the congress at time of deployment.
      @dev The congress should be the voting contract which can execute transactions only when voted
      on by all DAO participants. It should also be Upgradeable. This address won't be updated if the
      congress is updated, but we can ask it to give us the address of its latest version.
@@ -56,7 +57,7 @@ contract Upgradeable {
     }
 
     /**
-      Some storage changing functions should only be accessible to the newest version of 
+      @notice Some storage changing functions should only be accessible to the newest version of 
       this contract, so this modifier must be used.
      */
     modifier onlyNewestVersion() {
@@ -65,7 +66,7 @@ contract Upgradeable {
     }
 
     /**
-      Functions which can only be executed by the next version of the same contract
+      @notice Functions which can only be executed by the next version of the same contract
      */
     modifier onlyNextVersion() {
         require(msg.sender == nextVersion);
@@ -73,7 +74,7 @@ contract Upgradeable {
     }
 
     /**
-      Functions which can only be executed by the previous version of the same contract
+      @notice Functions which can only be executed by the previous version of the same contract
      */
     modifier onlyPreviousVersion() {
         require(msg.sender == previousVersion);
@@ -81,7 +82,7 @@ contract Upgradeable {
     }
 
     /**
-     Allows a function to be called only if the contract is active
+     @notice Allows a function to be called only if the contract is active
      */
     modifier onlyActive() {
         require(active);
@@ -89,7 +90,7 @@ contract Upgradeable {
     }
 
     /** 
-     Allows a function to be called only if the contract is not active
+     @notice Allows a function to be called only if the contract is not active
      */
     modifier onlyNotActive() {
         require(!active);
@@ -97,7 +98,7 @@ contract Upgradeable {
     }
 
     /**
-     For functions that can only be called by managers.
+     @notice For functions that can only be called by managers.
      @dev If the contract is not active, the function can be called by the latest version -
      this is needed for functions which directly change some variable in storage (e.g. set permissions)
     */
@@ -113,7 +114,7 @@ contract Upgradeable {
     }
 
     /**
-     Special modifier for functions - only accessible by managers when the contarct is not active
+     @notice Special modifier for functions - only accessible by managers when the contarct is not active
      */
     modifier onlyManagersWhenNotActive() {
         require(!active);
@@ -132,7 +133,7 @@ contract Upgradeable {
     }
     
     /**
-     If we want to upgrade a contract, it can only be done by vote (from the congress account)
+     @notice If we want to upgrade a contract, it can only be done by vote (from the congress account)
      @dev Upgrade logic should be set here for each version. 
      @param _newVersion the address of the new version (should already be deployed and voted on)
      */
@@ -147,7 +148,7 @@ contract Upgradeable {
     }
 
     /**
-     After deployment and/or upgrading. 
+     @notice After deployment and/or upgrading. 
      @dev If a contract is > version 0, the previous contract needs to have been upgraded 
      in order to activate the current version
      */
@@ -168,7 +169,7 @@ contract Upgradeable {
     }
 
     /**
-     check how many versions of the contract exist. A version is only added if it is activated
+     @notice check how many versions of the contract exist. A version is only added if it is activated
      @return the number of versions of the current contract that exist and have been activated
      */
     function numberOfVersions() external view returns(uint) {
@@ -235,6 +236,7 @@ contract Upgradeable {
      @dev since we only keep complex storage data (or all data) in the version of the contract where it
      is introduced, we need setter functions like this one - it is used to add the newest version's address
      once it is properly upgraded and activated. It is stored in v0's storage.
+     If you don't need to take all storage with you, you can just rely on internal variables
      */
     function _addNewVersion(address _ver) external onlyNewestVersion {
         //In theory, this if statement is redundant, but it is useful for testing. We can directly
