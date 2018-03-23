@@ -137,7 +137,7 @@ contract Upgradeable {
      @dev Upgrade logic should be set here for each version. 
      @param _newVersion the address of the new version (should already be deployed and voted on)
      */
-    function upgrade(address _newVersion) external onlyByVote {
+    function upgrade(address _newVersion) public onlyByVote {
         require(active);
         require(_newVersion != 0x0);
         nextVersion = _newVersion;
