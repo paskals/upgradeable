@@ -1,11 +1,6 @@
 pragma solidity^0.4.21;
 
-import ".././Congress.sol";
-
-interface CongressInterface {
-    function latestVersion() external view returns(address);
-    function isManager(address _man) external view returns(bool);
-}
+import ".././CongressInterface.sol";
 
 /**
  @title Upgrade-able contract base. 
@@ -46,7 +41,7 @@ contract Upgradeable {
      on by all DAO participants. It should also be Upgradeable. This address won't be updated if the
      congress is updated, but we can ask it to give us the address of its latest version.
      */
-    Congress public congress;
+    CongressInterface public congress;
 
     /**
       For functions which should only be executed by vote, this modifier should be used
@@ -95,22 +90,6 @@ contract Upgradeable {
     modifier onlyNotActive() {
         require(!active);
         _;
-    }
-
-    /**
-     @notice For functions that can only be called by managers.
-     @dev If the contract is not active, the function can be called by the latest version -
-     this is needed for functions which directly change some variable in storage (e.g. set permissions)
-    */
-    modifier onlyManagers() {
-        if (active) {
-            assert(address(this) == latestVersion());
-            require(congress.isManager(msg.sender));
-            _;
-        } else {
-            require(msg.sender == latestVersion());
-            _;
-        }
     }
 
     /**
