@@ -8,7 +8,7 @@ contract UpTest3 is UpTest2 {
     UpTest2(_congress, _prevVersion, _vNum)
     public 
     {
-        congress = Congress(_congress);
+        congress = _congress;
     }
 
 }

@@ -10,7 +10,7 @@ contract UpTest2 is UpTest1 {
     UpTest1(_congress, _prevVersion, _vNum)
     public 
     {
-        congress = Congress(_congress);
+        congress = _congress;
     }
     
     function c() public view returns(uint) {

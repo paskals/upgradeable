@@ -11,7 +11,7 @@ contract UpTest1 is Upgradeable {
     Upgradeable(_prevVersion, _vNum)
     public 
     {
-        congress = Congress(_congress);
+        congress = _congress;
     }
 
     function a() public view returns(uint) {
